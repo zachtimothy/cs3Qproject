@@ -63,11 +63,6 @@
                 background: #ea0e4b;
                 left: 0;
                 bottom: 0;
-                transform: translateY(3px);
-                transition: transform 0.3s ease;
-            }
-            .btn-dark:hover::after {
-                transform: translateY(0);
             }
             .btn-dark:active {
                 background: black;
@@ -89,7 +84,7 @@
                 user-select:none;
                 -o-user-select:none;
             }
-            .modalOverlay {
+            .overlay {
                 position: fixed;
                 width: 100%;
                 height: 100vh;
@@ -102,11 +97,11 @@
                 visibility: hidden;
                 opacity: 0;
             }
-            .modalActive {
+            .active {
                 visibility: visible;
                 opacity: 1;
             }
-            #modal {
+            #pop-up {
                 background-color: white;
                 width: 50%;
                 height: 45%;
@@ -115,13 +110,13 @@
                 overflow: scroll;
                 overflow-x: hidden;
             }
-            #modalButton {
+            #close {
                 margin-top: 10px;
                 background-color: black !important;
                 color: white !important;
                 width: 200px;
             }
-            #modalButton:hover {
+            #close:hover {
                 background-color: white !important;
                 color: black !important;
                 border: 1px solid black;
@@ -137,8 +132,8 @@
             <button id="tips" class="btn btn-dark" onclick="window.location.href='tips.html'"><i class="bi bi-lightbulb">&nbsp;&nbsp;</i>Tips and tricks</button><br>
             <button id="about" class="btn btn-dark" style="margin-bottom: 70px;" onclick="window.location.href='about.html'"><i class="bi bi-people">&nbsp;&nbsp;</i>About the developers</button>
 
-            <div class="modalOverlay">
-                <div id="modal">
+            <div class="overlay">
+                <div id="pop-up">
                     <h3><i class="bi bi-book">&nbsp;&nbsp;</i>How to Play</h3><br><br>
                     <p>Minesweeper is a game where the main objective is to find all tiles and avoid those that contain mines within them. 
                         These mines are hidden in a grid of tiles. Safe tiles have numbers telling you how many mines are within their one-tile proximity. 
@@ -147,21 +142,21 @@
                         When you click on an empty tile, the numbered tiles adjacent to it will automatically open for you. <br><br>
                         <b>NOTE: Contrary to the original game, marked tiles will still accept left clicks.</b>
                     </p>
-                    <button id="modalButton" class="btn btn-dark"><i class="bi bi-x-circle">&nbsp;&nbsp;</i>Close</button>
+                    <button id="close" class="btn btn-dark"><i class="bi bi-x-circle">&nbsp;&nbsp;</i>Close</button>
                 </div>
             </div>
         </div>
 
         <script>
             var btn = document.querySelector('#howTo');
-            var modal = document.querySelector('.modalOverlay');
-            var close = document.querySelector('#modalButton')
+            var modal = document.querySelector('.overlay');
+            var close = document.querySelector('#close')
 
             btn.addEventListener('click', function(){
-                modal.classList.add('modalActive');
+                modal.classList.add('active');
             });
             close.addEventListener('click', function(){
-                modal.classList.remove('modalActive');
+                modal.classList.remove('active');
             });
         </script>
     </body>
