@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Minesweeper</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+        <link rel="icon" type="image/x-icon" href="images/favicon.png">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <style>
+            *{
+                padding: 0;
+                margin: 0;
+            }
+            body {
+                background: #333;
+                color: white;
+                text-align: center;
+                margin-top: 20px;
+            }
+            #title {
+                margin-bottom: 40px;
+                font-family: 'Comfortaa', cursive;
+                background-color: white;
+                padding: 10px;
+                border-radius: 10px;
+                color: black;
+                font-size: 38px;
+                width: 300px;
+                margin-left: auto;
+                margin-right: auto;
+                position: relative;
+                z-index: 6;
+            }
+            #title:hover {
+                text-decoration: none;
+            }
+            #board {
+                width: 682px;
+                height: 682px;
+                margin-left: auto;
+                margin-right: auto;
+                position: relative;
+                background-color: rgb(100, 100, 100);
+                border-radius: 10px;
+                padding: 10px;
+                margin-bottom: 20px;
+
+            }
+            .tile {
+                width: 60px;
+                height: 60px;
+                margin: 3px;
+                background-color: rgb(155, 155, 155);
+                border-radius: 10px;
+                position: relative;
+                z-index: 1;
+            }
+            .tile:hover {
+                background-color: rgba(0,0,0,.5);
+                border-radius: 10px;
+            }
+            #mine {
+                background: url('images/mine.png');
+            }
+            .img {
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+            }
+            .executeOne {
+                width: 60px;
+                height: 60px;
+                margin: 3px;
+                border-radius: 10px;
+                background: rgb(100, 100, 100);
+                border: 2px solid rgb(155, 155, 155);
+                background-image: url('images/mine1.png');
+                background-size: cover;
+            }
+            .executeTwo {
+                width: 60px;
+                height: 60px;
+                margin: 3px;
+                border-radius: 10px;
+                background: rgb(100, 100, 100);
+                border: 2px solid rgb(155, 155, 155);
+                background-image: url('images/mine2.png');
+                background-size: cover;
+            }
+            .executeThree {
+                width: 60px;
+                height: 60px;
+                margin: 3px;
+                border-radius: 10px;
+                background: rgb(100, 100, 100);
+                border: 2px solid rgb(155, 155, 155);
+                background-image: url('images/mine3.png');
+                background-size: cover;
+            }
+            .marked {
+                background-image: url('images/mineFlag.png');
+                background-size: contain;
+            }
+            .marked:hover {
+                text-decoration: none;
+            }
+            #overlay {
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                position: fixed;
+                z-index: 5;
+            }
+            #deny, #start {
+                position: relative;
+                width: 200px;
+                margin: auto;
+                font-size: 20px;
+                z-index: 5;
+                background-color: white;
+                color: black;
+                width: 400px;
+                text-align: center;
+                overflow: hidden;
+                outline: none;
+                border: none;
+            }
+            #deny:hover, #start:hover {
+                background-color: black;
+                color: white;
+                text-decoration: none;
+            }
+            #deny::after, #start::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 0.175rem;
+                background: #ea0e4b;
+                left: 0;
+                bottom: 0;
+                transform: translateY(3px);
+                transition: transform 0.3s ease;
+            }
+            #deny:hover::after, #start:hover::after {
+                transform: translateY(0);
+            }
+            .btn-primary:hover,.btn-primary:focus,.btn-primary:active, 
+            .btn-primary:active:focus:not(:disabled):not(.disabled),
+            .btn:focus, .btn:active, .btn:hover{
+                box-shadow: none!important;
+                outline: 0;
+            }
+        </style>
+    </head>
+    <body oncontextmenu="return false;">
+        <div id="page-head">
+            <a id="title" href="index.html">Minesweeper</a><br>
+            <h4 id="timeCount" style="text-align: center; margin-top: 20px;">
+                <i class="bi bi-stopwatch"></i>: <span id="time">00:00</span>
+            </h4>
+        </div>
+        <div id="board" onclick="check()">
+            <div id="overlay"></div>
+            <div class="row mx-auto">
+                <div class="tile one" onclick="this.className = 'executeOne'; addScore(); this.onclick = null; this.oncontextmenu = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one" onclick="this.className = 'executeOne'; addScore(); this.onclick = null; this.oncontextmenu = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one" onclick="this.className = 'executeOne'; addScore(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two" onclick="this.className = 'executeTwo'; addScore(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two" onclick="this.className = 'executeTwo'; addScore(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one a" onclick="this.className = 'executeOne'; oneSec1Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free1" onclick="freeSpace1()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free1" onclick="freeSpace1()" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two bb" onclick="this.className = 'executeTwo'; twoSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two bb" onclick="this.className = 'executeTwo'; twoSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one a" onclick="this.className = 'executeOne'; oneSec1Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free1" onclick="freeSpace1()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free1" onclick="freeSpace1()" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two bb" onclick="this.className = 'executeTwo'; twoSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one" onclick="this.className = 'executeOne'; addScore();this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one a" onclick="this.className = 'executeOne'; oneSec1Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free1" onclick="freeSpace1()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free1" onclick="freeSpace1()" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one" onclick="this.className = 'executeOne'; addScore(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two aa" id="lonelyTile0" onclick="this.className = 'executeTwo'; this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one a" onclick="this.className = 'executeOne'; oneSec1Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one a" onclick="this.className = 'executeOne'; oneSec1Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two bb" onclick="this.className = 'executeTwo'; twoSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile three bbb" id="lonelyTile1" onclick="this.className = 'executeThree'; this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two" onclick="this.className = 'executeTwo'; addScore(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one" onclick="this.className = 'executeOne'; addScore(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile free2" onclick="freeSpace2()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two bb" onclick="this.className = 'executeTwo'; twoSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two cc" onclick="this.className = 'executeTwo'; twoSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile one b" onclick="this.className = 'executeOne'; oneSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two bb" onclick="this.className = 'executeTwo'; twoSec2Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile three ccc" id="lonelyTile2" onclick="this.className = 'executeThree'; this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two cc" onclick="this.className = 'executeTwo'; twoSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile one" onclick="this.className = 'executeOne'; addScore(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile one c" onclick="this.className = 'executeOne'; oneSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two cc" onclick="this.className = 'executeTwo'; twoSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+            <div class="row mx-auto">
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile free3" onclick="freeSpace3()" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile two cc" onclick="this.className = 'executeTwo'; twoSec3Check(); this.onclick = null" oncontextmenu="this.classList.toggle('marked');"></div>
+                <div class="tile mine" onclick="mine()" oncontextmenu="this.classList.toggle('marked');"></div>
+            </div>
+        </div>
+        <div id="alert" style="font-size: 32px; font-family: 'Comfortaa', cursive;"></div>
+        <div id="button1" style="margin-bottom: 60px;" hidden>
+            <button id="deny" class="btn btn-primary" onclick="retry()"><i class="bi bi-arrow-clockwise"></i></button>
+        </div>
+        <div id="button2" style="margin-bottom: 60px;">
+            <button id="start" class="btn btn-primary" onclick="startMe(this)"><i class="bi bi-play"></i></button>
+        </div>
+        
+        <script>
+                const restrictInput = (document.getElementById('overlay'));
+                var secs = 0;
+                var mins = 0;
+                var displaySecs = '0';
+                var displayMins = '0';
+                var oneSec1Num = 4;
+                var oneSec2Num = 10;
+                var oneSec3Num = 11;
+                var twoSec2Num = 5;
+                var twoSec3Num = 3;
+                var freeSpace1Num = 0;
+                var freeSpace2Num = 0;
+                var freeSpace3Num = 0;
+                var freeSpace1Score = 6;
+                var freeSpace2Score = 18;
+                var freeSpace3Score = 17;
+                var freeSpace1ScoreSub = 0;
+                var freeSpace2ScoreSub = 0;
+                var freeSpace3ScoreSub = 0;
+                var freeSpace1ScoreFinal = 0;
+                var freeSpace2ScoreFinal = 0;
+                var freeSpace3ScoreFinal = 0;
+                var success = 0;
+                var preventPrompt = 0;
+                var start = 0;
+
+            function startMe(){
+                start++;
+                document.getElementById('button2').style.display = "none";
+                restrictInput.style.position = 'static';
+                restrictInput.style.zIndex = '0';
+            }
+
+            function addScore(){
+                success++;
+            }
+
+            function oneSec1Check(){
+                if(freeSpace1Num == 0){
+                    oneSec1Num = oneSec1Num-1;
+                    freeSpace1ScoreSub++;
+                }
+            }
+
+            function oneSec2Check(){
+                if(freeSpace2Num == 0){
+                    oneSec2Num = oneSec2Num-1;
+                    freeSpace2ScoreSub++;
+                }
+            }
+            
+            function twoSec2Check(){
+                if(freeSpace2Num == 0){
+                    twoSec2Num = twoSec2Num-1;
+                    freeSpace2ScoreSub++;
+                }
+            }
+            
+            function oneSec3Check(){
+                if(freeSpace3Num == 0){
+                    oneSec3Num = oneSec3Num-1;
+                    freeSpace3ScoreSub++;
+                }
+            }
+            
+            function twoSec3Check(){
+                if(freeSpace3Num == 0){
+                    twoSec3Num = twoSec3Num-1;
+                    freeSpace3ScoreSub++;
+                }
+            }
+
+            function watch(){
+                if (start == 1){
+                    secs++;
+
+                    if(secs/60 === 1){
+                        secs = 0;
+                        mins++;
+
+                        if(mins/60 === 1){
+                            secs = 0
+                            mins = 60;
+                            timeOver();
+                        }
+                    }
+
+                    if(secs >= 10){
+                        displaySecs = '';
+                    }
+                    if(secs < 10){
+                        displaySecs = '0';
+                    }
+                    if(mins >= 10){
+                        displayMins = '';
+                    }
+
+                    document.getElementById('time').innerHTML = displayMins + mins + ":" + displaySecs + secs;
+                }
+            }
+
+            interval = window.setInterval(watch, 1000);
+
+            function mine(){
+                const mine = (document.getElementsByClassName('mine'));
+
+                restrictInput.style.position = "fixed";
+                restrictInput.style.zIndex = "5";
+
+                for(let b=0; b<=11; b++){
+                    mine[b].style.backgroundImage = "url('images/mine.png')";
+                    mine[b].style.backgroundSize = "cover";
+                }
+
+                setTimeout(function(){
+                        document.getElementById('alert').innerHTML = "You clicked on a mine!";
+
+                    setTimeout(function(){
+                        if(confirm('Would you like to return to main menu?')){
+                            window.location.href = 'index.html';
+                        }
+                        else{
+                            document.getElementById('alert').innerHTML = "";
+                            document.getElementById('button1').hidden = false;
+                        }
+                        },2000);
+                },1000);
+
+                window.clearInterval(interval);
+            }
+
+            function timeOver(){
+                document.getElementById('overlay').style.position = "fixed";
+                document.getElementById('time').style.color = "red";
+
+                setTimeout(function(){
+                    document.getElementById('alert').innerHTML = "You reached the time limit!";
+                    if(confirm('Would you like to return to main menu?')){
+                        window.location.href = 'index.html';
+                    }
+                    else{
+                        location.reload();
+                    }
+                },1000);
+
+                window.clearInterval(interval);
+            }
+
+            function freeSpace1(){
+                const section1 = (document.getElementsByClassName('free1'));
+                const oneSec1 = (document.getElementsByClassName('a'));
+                const lonely0 = (document.getElementById('lonelyTile0'));
+
+                for(let a=0; a<=5; a++){
+                    section1[a].style.background = "rgb(100, 100, 100)";
+                    section1[a].style.border = "2px solid rgb(155,155,155)";
+                }
+                for(let b=0; b<=oneSec1Num; b++){
+                    oneSec1[b].style.backgroundColor = "rgb(100, 100, 100)";
+                    oneSec1[b].style.background = "url('images/mine1.png')";
+                    oneSec1[b].style.backgroundSize = "cover";
+                    oneSec1[b].style.border = "2px solid rgb(155,155,155)";
+                }
+
+                lonely0.style.backgroundColor = "rgb(100, 100, 100)";
+                lonely0.style.background = "url('images/mine2.png')";
+                lonely0.style.backgroundSize = "cover";
+                lonely0.style.border = "2px solid rgb(155,155,155)";
+
+                freeSpace1ScoreFinal = freeSpace1Score - freeSpace1ScoreSub;
+
+                freeSpace1Num++;
+            }
+
+            function freeSpace2(){
+                const section2 = (document.getElementsByClassName('free2'));
+                const oneSec2 = (document.getElementsByClassName('b'));
+                const twoSec2 = (document.getElementsByClassName('bb'));
+                const lonely1 = (document.getElementById('lonelyTile1'));
+
+                for(let a=0; a<=7; a++){
+                    section2[a].style.background = "rgb(100, 100, 100)";
+                    section2[a].style.border = "2px solid rgb(155,155,155)";
+                }
+                for(let b=0; b<=oneSec2Num; b++){
+                    oneSec2[b].style.backgroundColor = "rgb(100, 100, 100)";
+                    oneSec2[b].style.background = "url('images/mine1.png')";
+                    oneSec2[b].style.backgroundSize = "cover";
+                    oneSec2[b].style.border = "2px solid rgb(155,155,155)";
+                }
+                for(let c=0; c<=twoSec2Num; c++){
+                    twoSec2[c].style.backgroundColor = "rgb(100, 100, 100)";
+                    twoSec2[c].style.background = "url('images/mine2.png')";
+                    twoSec2[c].style.backgroundSize = "cover";
+                    twoSec2[c].style.border = "2px solid rgb(155,155,155)";
+                }
+
+                lonely1.style.backgroundColor = "rgb(100, 100, 100)";
+                lonely1.style.background = "url('images/mine3.png')";
+                lonely1.style.backgroundSize = "cover";
+                lonely1.style.border = "2px solid rgb(155,155,155)";
+
+                freeSpace2ScoreFinal = freeSpace2Score - freeSpace2ScoreSub;
+
+                freeSpace2Num++;
+            }
+
+            function freeSpace3(){
+                const section3 = (document.getElementsByClassName('free3'));
+                const oneSec3 = (document.getElementsByClassName('c'));
+                const twoSec3 = (document.getElementsByClassName('cc'));
+                const lonely2 = (document.getElementById('lonelyTile2'));
+
+                for(let a=0; a<=22; a++){
+                    section3[a].style.background = "rgb(100,100,100)";
+                    section3[a].style.border = "2px solid rgb(155,155,155)";
+                }
+                for(let b=0; b<=oneSec3Num; b++){
+                    oneSec3[b].style.backgroundColor = "rgb(100, 100, 100)";
+                    oneSec3[b].style.background = "url('images/mine1.png')";
+                    oneSec3[b].style.backgroundSize = "cover";
+                    oneSec3[b].style.border = "2px solid rgb(155,155,155)";
+                }
+                for(let c=0; c<=twoSec3Num; c++){
+                    twoSec3[c].style.backgroundColor = "rgb(100, 100, 100)";
+                    twoSec3[c].style.background = "url('images/mine2.png')";
+                    twoSec3[c].style.backgroundSize = "cover";
+                    twoSec3[c].style.border = "2px solid rgb(155,155,155)";
+                }
+
+                lonely2.style.backgroundColor = "rgb(100, 100, 100)";
+                lonely2.style.background = "url('images/mine3.png')";
+                lonely2.style.backgroundSize = "cover";
+                lonely2.style.border = "2px solid rgb(155,155,155)";
+
+                freeSpace3ScoreFinal = freeSpace3Score - freeSpace3ScoreSub;
+
+                freeSpace3Num++;
+            }
+
+            function check(){
+                var final1 = 0;
+                var final2 = 0;
+                var final3 = 0;
+                var gamer = 0;
+
+                final1 = freeSpace1ScoreFinal + freeSpace1ScoreSub; 
+                final2 = freeSpace2ScoreFinal + freeSpace2ScoreSub; 
+                final3 = freeSpace3ScoreFinal + freeSpace3ScoreSub;
+
+                gamer = final1 + final2 + final3 + success;
+
+                if(gamer === 51 && preventPrompt == 0){
+
+                restrictInput.style.position = "fixed";
+                restrictInput.style.zIndex = "5";
+
+                    window.clearInterval(interval);
+                    
+                    document.getElementById('alert').innerHTML = "Congratulations!";
+                    console.log('hey! you finished the game! nice job!')
+
+                    setTimeout(function(){
+                            if(confirm('Your time: ' +  displayMins + mins + ":" + displaySecs + secs + '\n\nWould you like to return to main menu?')){
+                                window.location.href = 'index.html';
+                            }
+                            else{
+                                document.getElementById('alert').innerHTML = "";
+                                document.getElementById('button1').hidden = false;
+                            }
+                        },2000);
+
+                    preventPrompt++;
+                }
+            }
+
+            function retry(){
+                if(confirm('Would you like to reset the game?')){
+                    location.reload();
+                }
+            }
+        </script>
+    </body>
+</html>

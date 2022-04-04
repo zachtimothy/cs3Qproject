@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Minesweeper</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+        <link rel="icon" type="image/x-icon" href="images/favicon.png">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <style>
+            *{
+                padding: 0;
+                margin: 0;
+            }
+            body{
+                background: #333;
+                text-align: center;
+            }
+            #title {
+                margin-top: 50px;
+                margin-bottom: 80px;
+                font-family: 'Comfortaa', cursive;
+                background-color: white;
+                padding: 10px;
+                border-radius: 18px;
+                color: black;
+                font-size: 70px;
+                width: 550px;
+                margin-left: auto;
+                margin-right: auto;
+                pointer-events: none;
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select:none;
+                user-select:none;
+                -o-user-select:none;
+            }
+            .btn-dark {
+                margin-bottom: 20px;
+                position: relative;
+                font-size: 25px;
+                background-color: white;
+                color: black;
+                width: 400px;
+                text-align: justify;
+                overflow: hidden;
+                outline: none;
+                border: none;
+            }
+            .btn-dark:hover{
+                background-color: black;
+            }
+            .btn-dark::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 0.175rem;
+                background: #ea0e4b;
+                left: 0;
+                bottom: 0;
+                transform: translateY(3px);
+                transition: transform 0.3s ease;
+            }
+            .btn-dark:hover::after {
+                transform: translateY(0);
+            }
+            .btn-dark:active {
+                background: black;
+            }
+            .btn-dark:hover,.btn-dark:focus,.btn-dark:active, 
+            .btn-dark:active:focus:not(:disabled):not(.disabled),
+            .btn:focus, .btn:active, .btn:hover{
+                box-shadow: none!important;
+                outline: 0;
+            }
+            img {
+                width: 222px;
+                border-radius: 40px;
+                margin-bottom: 80px;
+                pointer-events: none;
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select:none;
+                user-select:none;
+                -o-user-select:none;
+            }
+            .modalOverlay {
+                position: fixed;
+                width: 100%;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                background-color: rgba(0,0,0,0.3);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                visibility: hidden;
+                opacity: 0;
+            }
+            .modalActive {
+                visibility: visible;
+                opacity: 1;
+            }
+            #modal {
+                background-color: white;
+                width: 50%;
+                height: 45%;
+                border-radius: 1vh;
+                padding: 20px 30px 0 30px;
+                overflow: scroll;
+                overflow-x: hidden;
+            }
+            #modalButton {
+                margin-top: 10px;
+                background-color: black !important;
+                color: white !important;
+                width: 200px;
+            }
+            #modalButton:hover {
+                background-color: white !important;
+                color: black !important;
+                border: 1px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 id="title">Minesweeper</h1>
+            <img class="img-fluid" src="images/mainMenu.png" alt=""><br>
+            <button id="play" class="btn btn-dark" onclick="window.location.href='minesweeper.html'"><i class="bi bi-play">&nbsp;&nbsp;</i>PLAY</button><br>
+            <button id="howTo" class="btn btn-dark"><i class="bi bi-book">&nbsp;&nbsp;</i>How to play</button><br>
+            <button id="tips" class="btn btn-dark" onclick="window.location.href='tips.html'"><i class="bi bi-lightbulb">&nbsp;&nbsp;</i>Tips and tricks</button><br>
+            <button id="about" class="btn btn-dark" style="margin-bottom: 70px;" onclick="window.location.href='about.html'"><i class="bi bi-people">&nbsp;&nbsp;</i>About the developers</button>
+
+            <div class="modalOverlay">
+                <div id="modal">
+                    <h3><i class="bi bi-book">&nbsp;&nbsp;</i>How to Play</h3><br><br>
+                    <p>Minesweeper is a game where the main objective is to find all tiles and avoid those that contain mines within them. 
+                        These mines are hidden in a grid of tiles. Safe tiles have numbers telling you how many mines are within their one-tile proximity. 
+                        You can use these numbers as clues to help you decide which tile you are about to click. If you click on a mine, you lose the game! 
+                        You open tiles with the left mouse button and mark tiles with a flag with the right mouse button, which would definitely help in knowing where to click. 
+                        When you click on an empty tile, the numbered tiles adjacent to it will automatically open for you. <br><br>
+                        <b>NOTE: Contrary to the original game, marked tiles will still accept left clicks.</b>
+                    </p>
+                    <button id="modalButton" class="btn btn-dark"><i class="bi bi-x-circle">&nbsp;&nbsp;</i>Close</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var btn = document.querySelector('#howTo');
+            var modal = document.querySelector('.modalOverlay');
+            var close = document.querySelector('#modalButton')
+
+            btn.addEventListener('click', function(){
+                modal.classList.add('modalActive');
+            });
+            close.addEventListener('click', function(){
+                modal.classList.remove('modalActive');
+            });
+        </script>
+    </body>
+</html>
