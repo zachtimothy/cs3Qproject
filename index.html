@@ -85,16 +85,16 @@
                 -o-user-select:none;
             }
             .overlay {
+                display: flex;
+                justify-content: center;
                 position: fixed;
+                background-color: rgba(0,0,0,0.3);
+                align-items: center;
+                visibility: hidden;
                 width: 100%;
                 height: 100vh;
                 top: 0;
                 left: 0;
-                background-color: rgba(0,0,0,0.3);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                visibility: hidden;
                 opacity: 0;
             }
             .active {
@@ -135,8 +135,8 @@
             <div class="overlay">
                 <div id="pop-up">
                     <h3><i class="bi bi-book">&nbsp;&nbsp;</i>How to Play</h3><br><br>
-                    <p>Minesweeper is a game where the main objective is to find all tiles and avoid those that contain mines within them. 
-                        These mines are hidden in a grid of tiles. Safe tiles have numbers telling you how many mines are within their one-tile proximity. 
+                    <p>Minesweeper is a game where the main objective is to find all tiles and avoid those that contain mines within them. There are 12 mines in total and 
+                        these are hidden in a grid of tiles. Safe tiles have numbers telling you how many mines are within their one-tile proximity. 
                         You can use these numbers as clues to help you decide which tile you are about to click. If you click on a mine, you lose the game! 
                         You open tiles with the left mouse button and mark tiles with a flag with the right mouse button, which would definitely help in knowing where to click. 
                         When you click on an empty tile, the numbered tiles adjacent to it will automatically open for you. <br><br>
